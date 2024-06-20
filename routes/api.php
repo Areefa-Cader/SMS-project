@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 
@@ -68,4 +69,9 @@ Route::post('/addCustomerDetails',[AppointmentController::class, 'addCustomerDet
 Route::delete('/deleteAppointment/{id}',[AppointmentController::class,'deleteAppointment']);
 Route::get('/getAllTimeSlots', [AppointmentController::class,'getAllTimeSlots']);
 Route::get('/getUpcomingAppointment',[AppointmentController::class,'getUpcomingAppointment']);
-Route::get('getStaffAvailability',[AppointmentController::class,'getStaffAvailability']);
+Route::get('/getStaffAvailability',[AppointmentController::class,'getStaffAvailability']);
+Route::post('/appointmentWithInvoice',[AppointmentController::class,'appointmentWithInvoice']);
+
+//invoice
+
+Route::get('/getAllInvoice',[InvoiceController::class,'getAllInvoice']);

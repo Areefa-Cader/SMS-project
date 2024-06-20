@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointments;
 use App\Models\Customers;
+use App\Models\Invoices;
 use App\Models\Services;
 use App\Models\Staffs;
 use Carbon\Carbon;
@@ -302,5 +303,31 @@ public function getStaffAvailability(Request $request) {
         return response()->json(['error'=>$error->getMessage()],500);
     }
   }
+
+  //create both appointment and invoices
+
+  public function appointmentWithInvoice(Request $request){
+     $appointment = Appointments::create([
+            'customer_id'=>$request->customer_id,
+            'staff_id'=>$request->staff_id,
+            'service_id'=>$request->service_id,
+            'date'=>$request->date,
+            'time'=>$request->time
+     ]);
+
+     $invoice = Invoices::create([
+        'appointment_id'=>$appointment->id,
+        'customer_name'=>$appointment->customer->fullname,
+        'total_amount'=>$request->price,
+        'issue_date'=>today(),
+        'due_date'=>$appointment->date
+     ]);
+
+     return response()->json(['message'=>'successfull added both appointment and invoice',
+     'appointment'=>$appointment,
+     'invoice'=>$invoice
+    ]);
+  }
+
 
 }
