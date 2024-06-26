@@ -73,4 +73,17 @@ class ServiceController extends Controller
         return response()->json(['error'=>$error->getMessage()],500);
     }
 }
+
+ //get Service By Id
+  public function getServiceById($id){
+    try{
+     $service = Services::find($id);
+     if(is_null($service)){
+        return response()->json(['message'=>'service was not found'],404);
+     }
+     return response()->json(['service'=>$service],200);
+  }catch(\Exception $error){
+    return response()->json(['error'=>$error->getMessage()],500);
+  }
+}
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
+use App\Models\Appointments;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,11 +44,13 @@ Route::get('/getCustomer',[CustomerController::class, 'getCustomer']);
 Route::post('/addCustomer',[CustomerController::class,'addCustomer']);
 Route::put('/updateCustomer/{id}',[CustomerController::class,'updateCustomer']);
 Route::delete('/deleteCustomer/{id}',[CustomerController::class,'deleteCustomer']);
+Route::get('/getCustomerById/{id}',[CustomerController::class, 'getCustomerById']);
 
 //staff
 
 Route::get('/getStaff',[StaffController::class,'getAllStaff']);
 Route::post('/addStaff',[StaffController::class,'addStaff']);
+Route::get('/getStaffById/{id}',[StaffController::class,'getStaffById']);
 
 Route::delete('/deleteStaff/{id}',[StaffController::class,'deleteStaff']);
 Route::put('/updateStaff/{id}',[StaffController::class,'updateStaff']);
@@ -60,6 +63,7 @@ Route::get('/getAllService', [ServiceController::class,'storeService']);
 Route::post('/addService',[ServiceController::class,'addService']);
 Route::put('/updateService/{id}',[ServiceController::class, 'updateService']);
 Route::delete('/deleteService/{id}',[ServiceController::class,'deleteService']);
+Route::get('/getServiceById/{id}',[ServiceController::class, 'getServiceById']);
 
 //Appointment
 
@@ -71,7 +75,10 @@ Route::get('/getAllTimeSlots', [AppointmentController::class,'getAllTimeSlots'])
 Route::get('/getUpcomingAppointment',[AppointmentController::class,'getUpcomingAppointment']);
 Route::get('/getStaffAvailability',[AppointmentController::class,'getStaffAvailability']);
 Route::post('/appointmentWithInvoice',[AppointmentController::class,'appointmentWithInvoice']);
+Route::get('/getAppointmentById/{id}',[AppointmentController::class,'getAppointmentById']);
+Route::put('/updateAppointment/{id}',[AppointmentController::class,'updateAppointment']);
 
 //invoice
 
 Route::get('/getAllInvoice',[InvoiceController::class,'getAllInvoice']);
+Route::get('/getInvoiceById/{id}',[InvoiceController::class,'getInvoiceById']);

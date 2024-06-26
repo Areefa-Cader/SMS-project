@@ -282,19 +282,24 @@ public function getStaffAvailability(Request $request) {
 }
 
 // update Appointment
-    public function updateAppointment($id){
+    public function updateAppointment(Request $request , $id){
         try{
         $appointment = Appointments::find($id);
         if(is_null($appointment)){
             return response()->json(['message'=>'The Appointment cannot be find']);
         }else{
+            // $customer = Customers::find($id);
+            // $staff = Staffs::find($id);
+            // $service = Services::find($id);
+
             $appointment->update([
 
-                    'cusName' => $appointment->customer->fullname,
-                    'empName' => $appointment->staff->fullname,
-                    'service' => $appointment->service->service_name,
-                    'date' => $appointment->date,
-                    'time' => $appointment->time
+                'customer_id' => $request->input('customer_id'),
+                'staff_id' =>  $request->input('staff_id'),
+                'service_id' =>  $request->input('service_id'),
+                'date' => Carbon::createFromFormat('d/m/Y', $request->input('date'))->format('Y-m-d'),
+                'time' => Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s'),
+                'price'=>$request->input('price')
 
             ]);
             return response()->json(['message'=>'successfully updated']);
@@ -329,5 +334,50 @@ public function getStaffAvailability(Request $request) {
     ]);
   }
 
+  //get Appointment by id
 
+  public function getAppointmentById($id){
+    try {
+        
+        $appointment = Appointments::with(['customer', 'staff', 'service'])->find($id);
+
+        
+        if (is_null($appointment)) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+       
+        $formattedAppointment = [
+            'appointment' => [
+                'id' => $appointment->id,
+                'date' => $appointment->date,
+                'time' => $appointment->time,
+            ],
+            'customer' => [
+                'id' => $appointment->customer->id,
+                'fullname' => $appointment->customer->fullname,
+                'email' => $appointment->customer->email,
+                'gender' => $appointment->customer->gender,
+                'address' => $appointment->customer->address,
+                'contact_no' => $appointment->customer->contact_no,
+            ],
+            'staff' => [
+                'id' => $appointment->staff->id,
+                'fullname' => $appointment->staff->fullname,
+                'email' => $appointment->staff->email,
+                'contact_no' => $appointment->staff->contact_no,
+            ],
+            'service' => [
+                'id' => $appointment->service->id,
+                'service_name' => $appointment->service->service_name,
+                'duration'=>$appointment->service->duration,
+                'price'=>$appointment->service->price,
+            ],
+        ];
+
+        return response()->json(['appointment' => $formattedAppointment], 200);
+    } catch (\Exception $error) {
+        return response()->json(['error' => $error->getMessage()], 500);
+    }
 }
+  }

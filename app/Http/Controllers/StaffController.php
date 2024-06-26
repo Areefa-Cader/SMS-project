@@ -51,6 +51,20 @@ class StaffController extends Controller
 
 }
 
+// staff by id
+
+public function getStaffById($id){
+    try{
+    $staff = Staffs::find($id);
+    if(is_null($staff)){
+        return response()->json(['message'=>' Staff was not found'], 404);
+    }
+    return response()->json(['Staff'=>$staff],200);
+}catch(\Exception $error){
+    return response()->json(['error'=>$error->getMessage()],500);
+}
+}
+
    
 
 

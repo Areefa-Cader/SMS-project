@@ -86,4 +86,17 @@ class CustomerController extends Controller
         return response()->json(['error'=>$error->getMessage()],500);
     }
 }
+ // get customer by id
+
+    public function getCustomerById($id){
+        try{
+            $customer = Customers::find($id);
+            if(is_null($customer)){
+                return response()->json(['message'=>'customer is not found'],404);
+            }
+            return response()->json(['customer'=>$customer]);
+        }catch(\Exception $error){
+            return response()->json(['error'=>$error->getMessage()],500);
+        }
+    }
 }
