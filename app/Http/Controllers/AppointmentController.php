@@ -167,8 +167,22 @@ class AppointmentController extends Controller
             'time'=>$request->input('time')
         ]);
         $appointment->save();
+
+        $invoice = new Invoices([
+            'appointment_id'=>$appointment->id,
+            'customer_name'=>$appointment->customer->fullname,
+            'total_amount'=>$request->price,
+            'issue_date'=>today(),
+            'due_date'=>$appointment->date
+         ]);
+         $invoice->save();
+
     }
-        return response()->json(['message'=>'successfully added'],200);
+        // return response()->json(['message'=>'successfully added both Appointment and invoice'],200);
+        return response()->json(['message'=>'successfull added both appointment and invoice',
+     'appointment'=>$appointment,
+     'invoice'=>$invoice
+    ]);
     
 
     }catch(\Exception $error){
@@ -308,32 +322,7 @@ public function getStaffAvailability(Request $request) {
         return response()->json(['error'=>$error->getMessage()],500);
     }
   }
-
-  //create both appointment and invoices
-
-  public function appointmentWithInvoice(Request $request){
-     $appointment = Appointments::create([
-            'customer_id'=>$request->customer_id,
-            'staff_id'=>$request->staff_id,
-            'service_id'=>$request->service_id,
-            'date'=>$request->date,
-            'time'=>$request->time
-     ]);
-
-     $invoice = Invoices::create([
-        'appointment_id'=>$appointment->id,
-        'customer_name'=>$appointment->customer->fullname,
-        'total_amount'=>$request->price,
-        'issue_date'=>today(),
-        'due_date'=>$appointment->date
-     ]);
-
-     return response()->json(['message'=>'successfull added both appointment and invoice',
-     'appointment'=>$appointment,
-     'invoice'=>$invoice
-    ]);
-  }
-
+  
   //get Appointment by id
 
   public function getAppointmentById($id){
