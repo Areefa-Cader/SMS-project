@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Staffs;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Database\Seeders\UsersTableSeeder;
+use Illuminate\Foundation\Auth\User as AuthUser;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -64,10 +67,75 @@ class AuthController extends Controller
 
     }
 
-    //login Api
-    public function login(){
 
+
+    //login Api
+    public function login(Request $request){
+
+    // Find the user by username
+    $user = User::where('username', $request->input('username'))->first();
+    $staff =Staffs::where('username', $request->input('username'))->first();
+
+    if($user) {
+        
+        if (Hash::check($request->password, $user->password)) {
+            
+            $token = $user->createToken('ACCESS_TOKEN')->accessToken;
+
+            
+            $response = [
+                'token' => $token,
+                'userRole' => $user->role,
+                'username' => $user->username,
+            ];
+
+            
+            switch ($user->role ) {
+                case 'admin':
+                    $response['admin'] = $user;
+                    return response()->json(["response"=>$response,"message"=>"Admin, successfully logged in!!"],200);
+                    return response()->json();
+                    break;
+
+                case 'owner':
+                    $response['owner'] = $user;
+                    return response()->json($response,200);
+                    break;
+
+                default:
+                    return response()->json(["message" => "Invalid role"], 400);
+            }
+        // }else {
+        //     return response()->json(["message" => "Incorrect Password"], 401);
+        // }
+
+            
+        // }elseif($staff){
+        //     if (Hash::check($request->password, $staff->password)) {
+            
+        //         $token = $staff->createToken('ACCESS_TOKEN')->accessToken;
+     
+        //         $response = [
+        //             'token' => $token,
+        //             'username' => $staff->username,
+        
+        //         ];
+        //         return response()->json($response,200);
+        //       return response()->json(["message"=>"Owner, you are successfully logged in"]);
+
+        }else{
+                return response()->json(["message" => "Incorrect Password"]); 
+            }
+        
+    } else {
+        return response()->json(["message" => "User does not exist"], 404);
     }
+
+}
+  
+    
+    
+
 
     //profile Api
     public function profile(){
@@ -80,8 +148,10 @@ class AuthController extends Controller
     }
 
     //logout Api
-    public function logout(){
-
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return response()->json(['message' => 'Logged out successfully']);
     }
         
     

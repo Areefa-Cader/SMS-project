@@ -25,18 +25,29 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('register',[AuthController::class,'register']);
-Route::post('login',[AuthController::class,'login']);
+// Route::post('register',[AuthController::class,'register']);
+// Route::post('login',[AuthController::class,'login']);
 
-Route::group([
-    "middleware" => ["auth:api"]
-], function(){
+// Route::group([
+//     "middleware" => ["auth:api"]
+// ], function(){
 
-    Route::get("profile", [AuthController::class, "profile"]);
-    Route::get("refresh", [AuthController::class, "refreshToken"]);
-    Route::get("logout", [AuthController::class, "logout"]);
+//     Route::get("profile", [AuthController::class, "profile"]);
+//     Route::get("refresh", [AuthController::class, "refreshToken"]);
+//     Route::get("logout", [AuthController::class, "logout"]);
 
-});
+// });
+
+// role based authentication
+// Route::middleware('auth')->group(function () {
+//     Route::middleware('role:admin')->get('/admin/dashboard', [AuthController::class, 'admin']);
+//     Route::middleware('role:owner')->get('/owner/dashboard', [AuthController::class, 'owner']);
+//     Route::middleware('role:staff')->get('/staff/dashboard', [AuthController::class, 'staff']);
+// });
+
+    Route::post('/login', [AuthController::class,'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    route::post('/logout',[AuthController::class,'logout']);
 
 //customer
 
