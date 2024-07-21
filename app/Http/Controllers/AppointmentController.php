@@ -111,19 +111,8 @@ class AppointmentController extends Controller
 
     public function addAppointment(Request $request){
         // customer details
-
         try{
 
-        // $customer = Customers::firstOrCreate([
-        //     'contact_no'=>$request->input('contact_no')
-        // ],
-        // [
-        //     'fullname'=>$request->input('fullname'),
-        //     'email'=>$request->input('email'),
-        //     'gender'=>$request->input('gender'),
-        //     'address'=>$request->input('address')
-        // ]
-        // );
         $customer = Customers::findOrFail($request->input('customer_id'));
 
         //validate the staff
@@ -136,7 +125,6 @@ class AppointmentController extends Controller
            if (empty($serviceIds) || !is_array($serviceIds)) {
             return response()->json(['error' => 'Invalid service IDs'], 400);
         }
-
 
         foreach ($serviceIds as $serviceId) {
             $service = Services::where('service_name', $serviceId)->first();
@@ -212,10 +200,10 @@ public function getAllTimeSlots(Request $request)
     $date = $request->input('date');
     $timeSlots = [];
 
-    // Get all appointments for the given date
+   
     $appointments = Appointments::with('staff')->where('date', $date)->get();
 
-    // Predefined list of time slots
+   
     $allTimeSlots = [
         '09:00', '10:00', '11:00', '12:00', '13:00',
         '14:00', '15:00', '16:00', '17:00', '18:00'

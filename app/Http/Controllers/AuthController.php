@@ -19,15 +19,31 @@ class AuthController extends Controller
             $username = Staffs::where('username', $request->input('username'))->first();
     
             if (!is_null($username)) {
-                return response()->json(['message' => 'Username already exists']);
+                return response()->json(['error' => 'Username already exists']);
             }
 
 
             $email = Staffs::where('email', $request->input('email'))->first();
 
             if (!is_null($email)) {
-                return response()->json(['message' => 'Email already exists']);
+                return response()->json(['error' => 'Email already exists']);
             }
+
+            $messages = [
+                // 'fullname.required' => 'Full name is required',
+                // 'email.required' => 'Email is required',
+                'email.email' => 'Email must be a valid email address',
+                'email.unique' => 'Email already exists',
+                // 'contact_no.required' => 'Contact number is required',
+                // 'role.required' => 'Role is required',
+                // 'dob.required' => 'Date of birth is required',
+                // 'status.in' => 'Status must be either active or inactive',
+                // 'username.required' => 'Username is required',
+                // 'password.required' => 'Password is required',
+                'password.min' => 'Password must be at least 8 characters long',
+                'password.regex' => 'Password must include at least one lowercase letter, one uppercase letter, and one number',
+            ];
+
 
             $validateData = $request->validate([
                         'fullname'=> 'required',
@@ -44,7 +60,7 @@ class AuthController extends Controller
                             'regex:/^(?=.*[A-Z])/',
                             'regex:/^(?=.*\d)/',
                         ]
-                        ]);   
+                        ], $messages);   
     
            
             $user = new Staffs([
@@ -57,7 +73,7 @@ class AuthController extends Controller
             'username' =>$validateData['username'],
             'password' =>Hash::make($validateData['password']),
         ]);
-                
+               
                 $user->save();
                 return response()->json(['message' => 'Saved Successfully!'], 201);
             
@@ -72,9 +88,9 @@ class AuthController extends Controller
     //login Api
     public function login(Request $request){
 
-    // Find the user by username
+    // user login
     $user = User::where('username', $request->input('username'))->first();
-    $staff =Staffs::where('username', $request->input('username'))->first();
+    
 
     if($user) {
         
@@ -99,41 +115,47 @@ class AuthController extends Controller
 
                 case 'owner':
                     $response['owner'] = $user;
-                    return response()->json($response,200);
+                    return response()->json(["response"=>$response,"message"=>"Owner, successfully logged in!!"],200);
                     break;
 
                 default:
-                    return response()->json(["message" => "Invalid role"], 400);
+                    return response()->json(["error" => "Invalid role"],400);
             }
-        // }else {
-        //     return response()->json(["message" => "Incorrect Password"], 401);
-        // }
+        }else {
+            return response()->json(["error" => "Incorrect Password"]);
+        }
 
             
-        // }elseif($staff){
-        //     if (Hash::check($request->password, $staff->password)) {
+        }else{
+            //staff login
+
+            $staff =Staffs::where('username', $request->input('username'))->first();
+            if($staff){
+
+            if (Hash::check($request->password, $staff->password)) {
             
-        //         $token = $staff->createToken('ACCESS_TOKEN')->accessToken;
+                $token = $staff->createToken('ACCESS_TOKEN')->accessToken;
      
-        //         $response = [
-        //             'token' => $token,
-        //             'username' => $staff->username,
+                $response = [
+                    'token' => $token,
+                    'userRole'=>'staff',
+                    'username' => $staff->username,
         
-        //         ];
-        //         return response()->json($response,200);
-        //       return response()->json(["message"=>"Owner, you are successfully logged in"]);
+                ];
+                return response()->json(["response"=>$response,"message"=>$response['username']." ,successfully logged in"],200);
 
         }else{
-                return response()->json(["message" => "Incorrect Password"]); 
+                return response()->json(["error" => "Incorrect Password"]); 
             }
         
-    } else {
-        return response()->json(["message" => "User does not exist"], 404);
+    }
+  else {
+        return response()->json(["error" => "Username and Password are incorrect"]);
     }
 
 }
   
-    
+}   
     
 
 
