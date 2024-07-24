@@ -9,6 +9,9 @@ use Database\Seeders\UsersTableSeeder;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -88,17 +91,20 @@ class AuthController extends Controller
     //login Api
     public function login(Request $request){
 
+        $credentials = $request->only('username', 'password');
+
+        
+
     // user login
     $user = User::where('username', $request->input('username'))->first();
     
 
     if($user) {
         
-        if (Hash::check($request->password, $user->password)) {
+        if (Hash::check($credentials['password'], $user->password)) {
             
-            $token = $user->createToken('ACCESS_TOKEN')->accessToken;
+            $token = JWTAuth::fromUser($user);
 
-            
             $response = [
                 'token' => $token,
                 'userRole' => $user->role,
@@ -132,25 +138,36 @@ class AuthController extends Controller
             $staff =Staffs::where('username', $request->input('username'))->first();
             if($staff){
 
-            if (Hash::check($request->password, $staff->password)) {
+            if (Hash::check($credentials['password'], $staff->password)) {
+                
             
-                $token = $staff->createToken('ACCESS_TOKEN')->accessToken;
+                $token = JWTAuth::fromUser($staff);
      
                 $response = [
                     'token' => $token,
                     'userRole'=>'staff',
+                    'fullname'=> $staff->fullname,
+                    'email'=> $staff->email,
+                    'contact_no'=> $staff->contact_no,
+                    'dob'=> $staff->dob,
+                    'role'=> $staff->role,
+                    'status'=> $staff->status,
                     'username' => $staff->username,
+                    'password' => $staff->password,
+
         
                 ];
+                
                 return response()->json(["response"=>$response,"message"=>$response['username']." ,successfully logged in"],200);
 
-        }else{
-                return response()->json(["error" => "Incorrect Password"]); 
+        }
+            else {
+                return response()->json(["error" => "Incorrect Password"]);
             }
         
     }
   else {
-        return response()->json(["error" => "Username and Password are incorrect"]);
+        return response()->json(["error" => "Incorrect Username"]);
     }
 
 }
@@ -162,7 +179,20 @@ class AuthController extends Controller
     //profile Api
     public function profile(){
 
+        $data = array();
+        if(Session::has('loginId')) {
+            $loginid = Session::get('loginId');
+            $role = Session::get('role');
+    
+            if($role === 'admin' || $role === 'owner') {
+                $data = User::where('id', $loginid)->first();
+            } elseif($role === 'staff') { // Corrected the typo here
+                $data = Staffs::where('id', $loginid)->first();
+            }
+        }
+        return response()->json($data);
     }
+    
 
     //refresh token Api
     public function refreshToken(){

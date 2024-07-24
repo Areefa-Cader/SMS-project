@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Staffs;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use NunoMaduro\Collision\Adapters\Phpunit\State;
 
@@ -104,6 +105,13 @@ public function getStaffById($id){
 
    public function getStaffByRole($role){
         return Staffs::where('role', $role)->get();
+   }
+
+   //staff profile
+
+   public function profile(){
+    $user = Auth::user();
+    return response()->json($user);
    }
    
 }
