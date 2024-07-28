@@ -9,6 +9,7 @@ use App\Models\Services;
 use App\Models\Staffs;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Symfony\Component\Console\Input\Input;
 
 class AppointmentController extends Controller
 {
@@ -97,23 +98,35 @@ class AppointmentController extends Controller
 
     public function addCustomerDetails(Request $request){
         try{
-        $customer = Customers::where('contact_no', $request->input('contact_no'))->first();
-        if(is_null($customer)){
-            return response()->json(['message'=>'we could not find any customer on this number']);
-        }else{
-            return response()->json(['customer'=>$customer]);
-
+            $customer = Customers::where('contact_no', $request->input('contact_no'))->first();
+            if(is_null($customer)){
+                $customer = new Customers([
+                    'fullname'=>$request->input('fullname'),
+                    'email'=>$request->input('email'),
+                    'contact_no'=>$request->input('contact_no'),
+                    'gender'=>$request->input('gender'),
+                    'address'=>$request->input('address'),
+                ]);
+                $customer->save();
+                return response()->json(['customer'=>$customer]);
+            }else{
+                return response()->json(['customer'=>$customer]);
+    
+            }
+        } catch(\Exception $error){
+            return response()->json(['message'=>$error->getMessage()],500);
+        }  
         }
-    } catch(\Exception $error){
-        return response()->json(['message'=>$error->getMessage()],500);
-    }  
-    }
+    
 
     public function addAppointment(Request $request){
         // customer details
         try{
 
-        $customer = Customers::findOrFail($request->input('customer_id'));
+            $customer = Customers::find($request->input('customer_id'));
+            if (is_null($customer)) {
+                return response()->json(['error' => 'Customer not found'], 400);
+            }
 
         //validate the staff
 
@@ -159,6 +172,7 @@ class AppointmentController extends Controller
         $invoice = new Invoices([
             'appointment_id'=>$appointment->id,
             'customer_name'=>$appointment->customer->fullname,
+            'service_name'=>$appointment->service->service_name,
             'total_amount'=>$request->price,
             'issue_date'=>today(),
             'due_date'=>$appointment->date
@@ -177,6 +191,8 @@ class AppointmentController extends Controller
         return response()->json(['error'=>$error->getMessage()],500);
     }
 }
+
+
 
 //delete appointment
 

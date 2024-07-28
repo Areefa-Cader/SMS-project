@@ -37,6 +37,7 @@ class StaffController extends Controller
         'status'=>'inactive',
         'username' =>$request->input('username'),
         'password' =>Hash::make($request->input('password')),
+        'access'=>'yes',
 
     ]);
 

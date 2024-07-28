@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('status',['active','inactive'])->default('active');
             $table->string('username');
             $table->string('password');
+            $table->enum('access',['yes','no'])->default('yes');
             $table->timestamps();
         });
     }

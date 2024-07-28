@@ -11,7 +11,7 @@ class Staffs extends Model implements JWTSubject
 {
     protected $table = 'staffs';
     protected $primaryKey = 'id';
-    protected $fillable = ['fullname','email','contact_no','dob','role','status','username','password'];
+    protected $fillable = ['fullname','email','contact_no','dob','role','status','username','password','access'];
     use HasFactory, HasApiTokens;
 
     public function appointments()
