@@ -145,7 +145,7 @@ class AppointmentController extends Controller
             if (!$service) {
                 return response()->json(['error' => "Service not found: $serviceId"], 400);
             }
-        
+                 // $date = Carbon::parse($request->input('date'))->format('Y-m-d');
 
                 $validateAppointment = Appointments::where('staff_id', $staff->id)->
                 where('service_id', $service->id)
@@ -155,8 +155,9 @@ class AppointmentController extends Controller
 
     
         if($validateAppointment){
-            return response()->json(['message'=>'This time slot is already booked']);
+            return response()->json(['error'=>'This time slot is already booked']);
         }
+
 
         //create a new appointment
 
@@ -168,7 +169,7 @@ class AppointmentController extends Controller
             'time'=>$request->input('time')
         ]);
         $appointment->save();
-
+        
         $invoice = new Invoices([
             'appointment_id'=>$appointment->id,
             'customer_name'=>$appointment->customer->fullname,
@@ -192,6 +193,11 @@ class AppointmentController extends Controller
     }
 }
 
+// private function convertDurationToMinutes($duration){
+//     $timeParts = explode(':' , $duration);
+//     return($timeParts[0] * 60) + $timeParts[1];
+// }
+
 
 
 //delete appointment
@@ -213,38 +219,72 @@ public function deleteAppointment($id){
 //manage time slots
 public function getAllTimeSlots(Request $request)
 {
+
     $date = $request->input('date');
     $timeSlots = [];
 
-   
-    $appointments = Appointments::with('staff')->where('date', $date)->get();
+    $appointments = Appointments::with(['staff', 'service'])->where('date', $date)->get();
 
-   
+    // return response()->json(['appointments'=>$appointments]);
+    
     $allTimeSlots = [
-        '09:00', '10:00', '11:00', '12:00', '13:00',
+         '09:00', '10:00', '11:00', '12:00', '13:00',
         '14:00', '15:00', '16:00', '17:00', '18:00'
     ];
 
-    foreach ($allTimeSlots as $time) {
-        $bookedAppointment = $appointments->firstWhere('time', $time);
-        if ($bookedAppointment) {
-            $timeSlots[] = [
-                'time' => $time,
-                'isBooked' => true,
-                'staffName' => $bookedAppointment->staff->fullname
-            ];
-        } else {
-            $timeSlots[] = [
+    foreach($allTimeSlots as $time){
+        $bookedAppointment = $appointments->first(function($appointment) use ($date , $time){
+            $appointmentTime = \Carbon\Carbon::createFromFormat('H:i:s', $appointment->time)->format('H:i');
+            return $appointment->date == $date && $appointmentTime == $time;
+           
+
+        });
+
+        // return response()->json(['bookedappointment'=> $bookedAppointment]);
+
+        if($bookedAppointment){
+            $isSameStaffAndService = $appointments->contains(function($appointment) use ($date, $time, $bookedAppointment){
+                $appointmentTime = \Carbon\Carbon::createFromFormat('H:i:s', $appointment->time)->format('H:i');
+                 return $appointment->date == $date && $appointmentTime == $time &&
+                 $appointment->staff_id == $bookedAppointment->staff_id &&
+                 $appointment->service_id == $bookedAppointment->service_id;
+
+            });
+
+            // return response()->json(['issamesaerviceandstaff'=> $isSameStaffAndService]);
+
+            if($isSameStaffAndService){
+                $timeSlots[]=[
+                    'time' => $time,
+                    'isBooked' => true,
+                    'staffName' => $bookedAppointment->staff->fullname,
+                    'serviceName' => $bookedAppointment->service->service_name
+                ];
+            }
+                else{
+                    $timeSlots[]=[
+                        'time' => $time,
+                        'isBooked' => false,
+                        'staffName' =>'',
+                        'serviceName' =>''
+                    ];
+
+                }
+            
+        }else{
+            $timeSlots[]=[
                 'time' => $time,
                 'isBooked' => false,
-                'staffName' => ''
+                'staffName' =>'',
+                'serviceName' =>''
             ];
         }
     }
 
-    return response()->json(['timeSlots' => $timeSlots], 200);
+    return response()->json(['timeSlots'=> $timeSlots]);
+ 
+   
 }
-
 // Upcoming Appointment
 
 public function getUpcomingAppointment() {

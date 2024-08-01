@@ -14,6 +14,6 @@ class Services extends Model
 
     public function appointments()
     {
-        return $this->hasMany(Appointments::class);
+        return $this->belongsTo(Appointments::class);
     }
 }

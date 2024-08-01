@@ -74,7 +74,7 @@ Route::get('/getAllAppointment',[AppointmentController::class,'getAllAppointment
 Route::post('/addAppointment',[AppointmentController::class,'addAppointment']);
 Route::post('/addCustomerDetails',[AppointmentController::class, 'addCustomerDetails']);
 Route::delete('/deleteAppointment/{id}',[AppointmentController::class,'deleteAppointment']);
-Route::get('/getAllTimeSlots', [AppointmentController::class,'getAllTimeSlots']);
+Route::post('/getAllTimeSlots', [AppointmentController::class,'getAllTimeSlots']);
 Route::get('/getUpcomingAppointment',[AppointmentController::class,'getUpcomingAppointment']);
 Route::get('/getStaffAvailability',[AppointmentController::class,'getStaffAvailability']);
 Route::post('/appointmentWithInvoice',[AppointmentController::class,'appointmentWithInvoice']);

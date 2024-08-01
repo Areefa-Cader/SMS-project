@@ -20,11 +20,11 @@ class Appointments extends Model
     }
 
     public function service() {
-        return $this->belongsTo(Services::class);
+        return $this->belongsTo(Services::class );
     }
 
     public function invoice(){
-        return $this->hasOne(Invoices::class);
+        return $this->belongsTo(Invoices::class);
     }
 
     use HasFactory;
