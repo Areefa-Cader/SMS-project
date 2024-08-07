@@ -139,18 +139,21 @@ class AppointmentController extends Controller
             return response()->json(['error' => 'Invalid service IDs'], 400);
         }
 
+        $serviceNames = [];
+        $totalAmount = 0;
+       
+
         foreach ($serviceIds as $serviceId) {
             $service = Services::where('service_name', $serviceId)->first();
 
             if (!$service) {
                 return response()->json(['error' => "Service not found: $serviceId"], 400);
             }
-                 // $date = Carbon::parse($request->input('date'))->format('Y-m-d');
 
-                $validateAppointment = Appointments::where('staff_id', $staff->id)->
-                where('service_id', $service->id)
+                $validateAppointment = Appointments::where('staff_id', $staff->id)
                 ->where('date', $request->input('date'))
                 ->where('time', $request->input('time'))
+                ->where('service_id', $service->id)
                 ->first();
 
     
@@ -158,8 +161,15 @@ class AppointmentController extends Controller
             return response()->json(['error'=>'This time slot is already booked']);
         }
 
+        $serviceNames[] = $service->service_name;
+        $totalAmount += $service->price;
 
+
+    }  
         //create a new appointment
+
+        // $serviceIdsString = implode(',',$serviceIds);
+        $serviceNamesString = implode(',' , $serviceNames);
 
         $appointment = new Appointments([
             'customer_id'=>$customer->id,
@@ -169,18 +179,18 @@ class AppointmentController extends Controller
             'time'=>$request->input('time')
         ]);
         $appointment->save();
-        
+
         $invoice = new Invoices([
             'appointment_id'=>$appointment->id,
             'customer_name'=>$appointment->customer->fullname,
-            'service_name'=>$appointment->service->service_name,
-            'total_amount'=>$request->price,
+            'service_name'=>$serviceNamesString,
+            'total_amount'=>$totalAmount,
             'issue_date'=>today(),
             'due_date'=>$appointment->date
          ]);
          $invoice->save();
 
-    }
+    
         // return response()->json(['message'=>'successfully added both Appointment and invoice'],200);
         return response()->json(['message'=>'successfull added both appointment and invoice',
      'appointment'=>$appointment,
@@ -350,22 +360,42 @@ public function getStaffAvailability(Request $request) {
             // $staff = Staffs::find($id);
             // $service = Services::find($id);
 
+            
+
             $appointment->update([
 
                 'customer_id' => $request->input('customer_id'),
                 'staff_id' =>  $request->input('staff_id'),
                 'service_id' =>  $request->input('service_id'),
-                'date' => Carbon::createFromFormat('d/m/Y', $request->input('date'))->format('Y-m-d'),
-                'time' => Carbon::createFromFormat('H:i:s', $request->input('time'))->format('H:i:s'),
+                'date' => Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'),
+                'time' => Carbon::createFromFormat('H:i', $request->input('time'))->format('H:i:s'),
                 'price'=>$request->input('price')
 
             ]);
             return response()->json(['message'=>'successfully updated']);
         }
     }catch(\Exception $error){
-        return response()->json(['error'=>$error->getMessage()],500);
+        return response()->json(['error'=>$error->getMessage()]);
     }
+
   }
+
+  //function for updating time in update appointment
+
+    public function getUnavailableTimeSlots(Request $request){
+
+        try{
+            $date = $request->input('date');
+
+            $unavailableSlots = Appointments::where('date',$date)->pluck('time')->toArray();
+            return response()->json(['unavailableSlots'=> $unavailableSlots]);
+
+        }catch(\Exception $error){
+            return response()->json(['error'=>$error->getMessage()],500);
+
+        }
+
+    }
   
   //get Appointment by id
 

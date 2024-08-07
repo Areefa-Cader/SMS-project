@@ -80,6 +80,7 @@ Route::get('/getStaffAvailability',[AppointmentController::class,'getStaffAvaila
 Route::post('/appointmentWithInvoice',[AppointmentController::class,'appointmentWithInvoice']);
 Route::get('/getAppointmentById/{id}',[AppointmentController::class,'getAppointmentById']);
 Route::put('/updateAppointment/{id}',[AppointmentController::class,'updateAppointment']);
+Route::post('getUnavailableTimeSlots', [AppointmentController::class,'getUnavailableTimeSlots']);
 
 //invoice
 

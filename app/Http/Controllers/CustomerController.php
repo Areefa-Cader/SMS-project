@@ -40,7 +40,7 @@ class CustomerController extends Controller
                 $customer->save();
                 return response()->json(['message' => 'Successfully Added']);
             } else {
-                return response()->json(['message' => 'email is already exist']);
+                return response()->json(['error' => 'email is already exist']);
             }
         } catch (\Exception $error) {
             return response()->json(["error" => $error->getMessage()], 500);
