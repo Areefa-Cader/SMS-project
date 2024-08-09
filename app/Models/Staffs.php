@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -12,7 +13,7 @@ class Staffs extends Model implements JWTSubject
     protected $table = 'staffs';
     protected $primaryKey = 'id';
     protected $fillable = ['fullname','email','contact_no','dob','role','status','username','password','access'];
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens , Notifiable;
 
     public function appointments()
     {

@@ -76,9 +76,18 @@ class AuthController extends Controller
             'username' =>$validateData['username'],
             'password' =>Hash::make($validateData['password']),
         ]);
+
+        $token = JWTAuth::fromUser($user);
+     
+                $response = [
+                    'token' => $token,
+                    'userRole'=>'staff',
+                    'role'=> $user->role,
+                    'status'=> $user->status,
+                ];
                
                 $user->save();
-                return response()->json(['message' => 'Saved Successfully!'], 201);
+                return response()->json(['response'=>$response,'message' => 'Saved Successfully!'], 201);
             
         } catch (\Exception $error) {
             return response()->json(['error' => $error->getMessage()]);

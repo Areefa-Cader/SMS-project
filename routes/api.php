@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StaffController;
 use App\Models\Appointments;
@@ -86,3 +88,12 @@ Route::post('getUnavailableTimeSlots', [AppointmentController::class,'getUnavail
 
 Route::get('/getAllInvoice',[InvoiceController::class,'getAllInvoice']);
 Route::get('/getInvoiceById/{id}',[InvoiceController::class,'getInvoiceById']);
+
+//forgot password
+
+Route::post('/sendEmailLink',[ResetPasswordController::class,'sendEmail']);
+
+//notification
+
+// Route::get('/sendNotifyEmail',NotificationController::class,'sendNotifyEmail');
+Route::get('/sendNotification/{userId}/{appointmentId}',[NotificationController::class, 'sendNotification']);
