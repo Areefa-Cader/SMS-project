@@ -97,3 +97,10 @@ Route::post('/sendEmailLink',[ResetPasswordController::class,'sendEmail']);
 
 // Route::get('/sendNotifyEmail',NotificationController::class,'sendNotifyEmail');
 Route::get('/sendNotification/{userId}/{appointmentId}',[NotificationController::class, 'sendNotification']);
+Route::post('/sendReminder',[NotificationController::class,'sendReminder']);
+// Route::get('/getUnreadNotifications/{staffId}',[NotificationController::class, 'getUnreadNotifications']);
+// Route::post('/markAsRead/{notificationId}',[NotificationController::class, 'markAsRead']);
+
+// Route::get('/getNotifications',[NotificationController::class,'getNotifications']);
+Route::get('getNotifications/{staff}',[NotificationController::class, 'getNotifications']);
+Route::put('markAsRead/{notificationId}',[NotificationController::class,'markAsRead']);

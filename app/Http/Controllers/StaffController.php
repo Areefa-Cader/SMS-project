@@ -88,13 +88,13 @@ public function getStaffById($id){
     try{
         $staff = Staffs::find($id);
        if(is_null($staff)){
-        return response()->json(['message'=>'customer was not found'],404);
+        return response()->json(['message'=>'staff was not found'],404);
        }else{
         $staff->update([
             'fullname'=>$request->input('fullname'),
             'email'=>$request->input('email'),
             'contact_no'=>$request->input('contact_no'),
-            'dob'=>$request->input('dob'),
+            // 'dob'=>$request->input('dob'),
             'role'=>$request->input('role')
         ]);
         return response()->json(['message'=>'Staff was updated'],201);

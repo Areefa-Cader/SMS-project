@@ -115,6 +115,7 @@ class AuthController extends Controller
             $token = JWTAuth::fromUser($user);
 
             $response = [
+                'id'=>$user->id,
                 'token' => $token,
                 'userRole' => $user->role,
                 'username' => $user->username,
@@ -153,6 +154,7 @@ class AuthController extends Controller
                 $token = JWTAuth::fromUser($staff);
      
                 $response = [
+                    'id'=>$staff->id,
                     'token' => $token,
                     'userRole'=>'staff',
                     'fullname'=> $staff->fullname,
@@ -195,7 +197,7 @@ class AuthController extends Controller
     
             if($role === 'admin' || $role === 'owner') {
                 $data = User::where('id', $loginid)->first();
-            } elseif($role === 'staff') { // Corrected the typo here
+            } elseif($role === 'staff') { 
                 $data = Staffs::where('id', $loginid)->first();
             }
         }

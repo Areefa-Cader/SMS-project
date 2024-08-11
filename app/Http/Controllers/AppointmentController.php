@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Appointments;
 use App\Models\Customers;
 use App\Models\Invoices;
+use App\Models\reminders;
 use App\Models\Services;
 use App\Models\Staffs;
+use App\Notifications\NewAppointment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Console\Input\Input;
 
 class AppointmentController extends Controller
@@ -190,11 +193,24 @@ class AppointmentController extends Controller
          ]);
          $invoice->save();
 
+         $reminder = new reminders([
+            'type'=> 'New Appointment',
+            'message'=> json_encode(['message'=>'You have an Appointment at'.$appointment->time]),
+            'appointment_id'=>$appointment->id,
+            'staff_id'=>$staff->id
+         ]);
+
+         $reminder->save();
+         $staff= Staffs::find($appointment->staff_id);
+         $staff->notify(new NewAppointment($appointment));
+
+
     
         // return response()->json(['message'=>'successfully added both Appointment and invoice'],200);
         return response()->json(['message'=>'successfull added both appointment and invoice',
      'appointment'=>$appointment,
-     'invoice'=>$invoice
+     'invoice'=>$invoice,
+    //  'reminder'=>$reminder
     ]);
     
 

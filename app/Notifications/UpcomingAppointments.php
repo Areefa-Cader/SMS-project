@@ -13,14 +13,14 @@ class UpcomingAppointments extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    private $appointmentDetails;
+    private $appointmentData;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($appointmentDetails)
+    public function __construct($appointmentData)
     {
-        $this->appointmentDetails = $appointmentDetails;
+        $this->appointmentData = $appointmentData;
     }
 
     /**
@@ -39,11 +39,16 @@ class UpcomingAppointments extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('You have an upcoming appointment on 14th August 2024.')
+                    ->subject('Appointment Reminder')
+                    ->line('Hello,' . $this->appointmentData->staff->fullname)
+                    ->line('You have an upcoming appointment')
+                    ->line('customer:'. $this->appointmentData->customer->fullname)
+                    ->line('Service:'. $this->appointmentData->service->service_name)
+                    ->line('Date:'. $this->appointmentData->date)
                     ->action('View Appointment', url('http://localhost:4200/staff-dashboard'))
                     // ->error() //shows the button in red clor
-                    ->line('Thank you!')
-                    ->Subject('Upcoming Appointment');
+                    ->line('Thank you!');
+                    // ->Subject('Upcoming Appointment');
 
                     // ->view('welcome');
 
@@ -58,7 +63,7 @@ class UpcomingAppointments extends Notification implements ShouldQueue
     {
         return [
             // 'appointment_id'=>$this->appointmentDetails->id,
-            'message'=> 'details of upcoming appointment'
+            'message'=> 'You have an Upcoming Appointment'
         ];
     }
 }

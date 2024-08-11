@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Appointments extends Model
 {
@@ -27,5 +28,9 @@ class Appointments extends Model
         return $this->belongsTo(Invoices::class);
     }
 
-    use HasFactory;
+    public function reminder(){
+        return $this->belongsTo(Reminders::class);
+    }
+
+    use HasFactory , Notifiable;
 }
