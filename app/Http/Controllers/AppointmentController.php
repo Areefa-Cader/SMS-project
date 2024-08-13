@@ -166,6 +166,7 @@ class AppointmentController extends Controller
 
         $serviceNames[] = $service->service_name;
         $totalAmount += $service->price;
+       
 
 
     }  
@@ -181,7 +182,10 @@ class AppointmentController extends Controller
             'date'=>$request->input('date'),
             'time'=>$request->input('time')
         ]);
-        $appointment->save();
+
+        if(!$appointment->save()){
+            return response()->json(['error'=>'Error creating appointment']);
+        }
 
         $invoice = new Invoices([
             'appointment_id'=>$appointment->id,
@@ -189,9 +193,14 @@ class AppointmentController extends Controller
             'service_name'=>$serviceNamesString,
             'total_amount'=>$totalAmount,
             'issue_date'=>today(),
-            'due_date'=>$appointment->date
+            'due_date'=>$appointment->date,
          ]);
-         $invoice->save();
+
+        
+        if(!$invoice->save()){
+            $appointment->delete();
+            return response()->json(['error'=>'Error creating Invoice ']);
+        }
 
          $reminder = new reminders([
             'type'=> 'New Appointment',
@@ -347,15 +356,18 @@ public function getStaffAvailability(Request $request) {
 
     try {
         $staffs = Staffs::all();
+        //it retrieves the staffs who have appointments, others status is empty means no appointments
         $appointments = Appointments::whereIn('staff_id', $staffs->pluck('id'))
                                     ->where('date', '>=', $date)
                                     ->get();
+        // return response()->json(['appointments'=>$appointments]);                                        
 
         $availability = $staffs->map(function($staff) use ($appointments) {
             $staffAppointments = $appointments->where('staff_id', $staff->id);
             return [
                 'fullname' => $staff->fullname,
-                'status' => $staffAppointments->isEmpty()
+                'appointments'=>$appointments,
+                'status' => !$staffAppointments->isEmpty()
             ];
         });
 

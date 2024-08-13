@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('total_amount',10,2);
             $table->date('issue_date');
             $table->date('due_date')->nullable();
+            $table->decimal('advanced_payment',10,2)->default(0);
             $table->enum('status', ['pending', 'paid'])->default('pending');
             $table->timestamps();
 

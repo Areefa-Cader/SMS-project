@@ -88,6 +88,7 @@ Route::post('getUnavailableTimeSlots', [AppointmentController::class,'getUnavail
 
 Route::get('/getAllInvoice',[InvoiceController::class,'getAllInvoice']);
 Route::get('/getInvoiceById/{id}',[InvoiceController::class,'getInvoiceById']);
+Route::put('/updateInvoice/{id}',[InvoiceController::class,'updateInvoice']);
 
 //forgot password
 

@@ -33,16 +33,9 @@ class AuthController extends Controller
             }
 
             $messages = [
-                // 'fullname.required' => 'Full name is required',
-                // 'email.required' => 'Email is required',
                 'email.email' => 'Email must be a valid email address',
                 'email.unique' => 'Email already exists',
-                // 'contact_no.required' => 'Contact number is required',
-                // 'role.required' => 'Role is required',
-                // 'dob.required' => 'Date of birth is required',
-                // 'status.in' => 'Status must be either active or inactive',
-                // 'username.required' => 'Username is required',
-                // 'password.required' => 'Password is required',
+                'contact_no.required' => 'The contact number must be 10 digits',
                 'password.min' => 'Password must be at least 8 characters long',
                 'password.regex' => 'Password must include at least one lowercase letter, one uppercase letter, and one number',
             ];
@@ -51,7 +44,7 @@ class AuthController extends Controller
             $validateData = $request->validate([
                         'fullname'=> 'required',
                         'email' => 'required|email|unique:users',
-                        'contact_no' => 'required',
+                        'contact_no' => 'required | digits:10',
                         'role' => 'required',
                         'dob'=>'required',
                         'status'=>'in:active,inactive',
@@ -72,10 +65,12 @@ class AuthController extends Controller
             'contact_no' => $validateData['contact_no'],
             'role' => $validateData['role'],
             'dob' => $validateData['dob'],
-            'status'=>'inactive',
+            'access'=>'pending',
             'username' =>$validateData['username'],
             'password' =>Hash::make($validateData['password']),
         ]);
+
+        $user->save();
 
         $token = JWTAuth::fromUser($user);
      
@@ -86,7 +81,7 @@ class AuthController extends Controller
                     'status'=> $user->status,
                 ];
                
-                $user->save();
+                
                 return response()->json(['response'=>$response,'message' => 'Saved Successfully!'], 201);
             
         } catch (\Exception $error) {

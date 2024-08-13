@@ -18,10 +18,9 @@ return new class extends Migration
             $table->integer('contact_no');
             $table->string('dob');
             $table->string('role');
-            $table->enum('status',['active','inactive'])->default('active');
             $table->string('username');
             $table->string('password');
-            $table->enum('access',['yes','no'])->default('yes');
+            $table->enum('access',['pending','approved','rejected'])->default('pending');
             $table->timestamps();
         });
     }

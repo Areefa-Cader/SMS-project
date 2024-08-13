@@ -59,7 +59,7 @@ class NewAppointment extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         return [
-            'message'=>'You have a new appointment scheduled'
+            'You have a new appointment scheduled on'. $this->appointment->date
         ];
     }
 }

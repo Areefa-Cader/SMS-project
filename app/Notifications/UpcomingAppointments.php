@@ -63,7 +63,7 @@ class UpcomingAppointments extends Notification implements ShouldQueue
     {
         return [
             // 'appointment_id'=>$this->appointmentDetails->id,
-            'message'=> 'You have an Upcoming Appointment'
+             'You have an Upcoming Appointment on'.$this->appointmentData->date
         ];
     }
 }

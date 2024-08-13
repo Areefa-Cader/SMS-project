@@ -16,7 +16,7 @@ class ServiceController extends Controller
         try{
         $serviceName = Services::where('service_name', $request->input('service_name'))->first();
         if(!is_null($serviceName)){
-           return response()->json(['message'=>'Service is already exist']);
+           return response()->json(['error'=>'Service is already exist']);
         }else{
             $service = new Services([
                'service_name'=>$request->input('service_name'),
@@ -40,7 +40,7 @@ class ServiceController extends Controller
         try{
         $service = Services::find($id);
         if(is_null($service)){
-            return response()->json(['message'=>'Service is not found']);
+            return response()->json(['error'=>'Service is not found']);
         }
         else{
             $service->update([
@@ -64,7 +64,7 @@ class ServiceController extends Controller
         try{
         $service = Services::find($id);
         if(is_null($service)){
-            return response()->json(['message'=>'service is not found'],404);
+            return response()->json(['error'=>'service is not found'],404);
         }else{
             $service->delete();
             return response()->json(['message'=> 'service was deleted']);
@@ -79,7 +79,7 @@ class ServiceController extends Controller
     try{
      $service = Services::find($id);
      if(is_null($service)){
-        return response()->json(['message'=>'service was not found'],404);
+        return response()->json(['error'=>'service was not found'],404);
      }
      return response()->json(['service'=>$service],200);
   }catch(\Exception $error){

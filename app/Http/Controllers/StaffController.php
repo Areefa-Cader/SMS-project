@@ -22,32 +22,58 @@ class StaffController extends Controller
     try{
     $username = Staffs::where('username', $request->input('username'))->first();
     if(!is_null($username)){
-        return response()->json(['message'=>'username was already exist']);
+        return response()->json(['error'=>'username was already exist']);
     }
     $email = Staffs::where('email', $request->input('email'))->first();
     if(!is_null($email)){
-        return response()->json(['message'=>'Email was already exist']);
+        return response()->json(['error'=>'Email was already exist']);
     }
-    $staff = new Staffs([
-        'fullname'=>$request->input('fullname'),
-        'email'=>$request->input('email'),
-        'contact_no'=>$request->input('contact_no'),
-        'dob'=>$request->input('dob'),
-        'role'=>$request->input('role'),
-        'status'=>'inactive',
-        'username' =>$request->input('username'),
-        'password' =>Hash::make($request->input('password')),
-        'access'=>'yes',
 
-    ]);
+    $messages = [
+        'email.email' => 'Email must be a valid email address',
+        'email.unique' => 'Email already exists',
+        'contact_no.required' => 'The contact number must be 10 digits',
+        'password.min' => 'Password must be at least 8 characters long',
+        'password.regex' => 'Password must include at least one lowercase letter, one uppercase letter, and one number',
+    ];
 
+
+    $validateData = $request->validate([
+                'fullname'=> 'required',
+                'email' => 'required|email|unique:users',
+                'contact_no' => 'required | digits:10',
+                'role' => 'required',
+                'dob'=>'required',
+                'username' => 'required',
+                'password' => [
+                    'required',
+                    'min:8',
+                    'regex:/^(?=.*[a-z])/',
+                    'regex:/^(?=.*[A-Z])/',
+                    'regex:/^(?=.*\d)/',
+                ]
+                ], $messages);  
+                
+                
+
+
+                $staff = new Staffs([
+                    'fullname' =>$validateData['fullname'],
+                    'email' =>$validateData['email'],
+                    'contact_no' => $validateData['contact_no'],
+                    'role' => $validateData['role'],
+                    'dob' => $validateData['dob'],
+                    'access'=>'pending',
+                    'username' =>$validateData['username'],
+                    'password' =>Hash::make($validateData['password']),
+                ]);
     
     $staff->save();
     return response()->json(['message'=>'Staff was Saved'],201);
 
 
 }catch(\Exception $error){
-    return response()->json(['error'=> $error->getMessage()],500);
+    return response()->json(['error'=> $error->getMessage()]);
 }
 
 

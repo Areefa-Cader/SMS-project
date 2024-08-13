@@ -24,4 +24,25 @@ class InvoiceController extends Controller
     }
     }
 
+    public function updateInvoice(Request $request, $id){
+        try{
+            $invoice = Invoices::find($id);
+            if(is_null($invoice)){
+                return response()->json(['error'=>'Invoice is not found']);
+            }else{
+                $invoice->update([
+                    'customer_name' => $request->input('customer_name'),
+                    'due_date' => $request->input('due_date'),
+                    'advance_payment' => $request->input('advance_payment'),
+                    'status' => $request->input('status'),
+                ]);
+
+                return response()->json(['message'=>'Successfully Updated']);
+                
+            }
+        }catch(\Exception $error){
+            return response()->json(['error'=>$error->getMessage()]);
+        }
+    }
+
 }

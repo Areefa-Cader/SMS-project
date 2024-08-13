@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invoices extends Model
 {
-   protected $fillable = ['appointment_id','customer_name','service_name','total_amount','issue_date','due_date','status'];
+   protected $fillable = ['appointment_id','customer_name','service_name','total_amount','issue_date','due_date','advanced_payment','status'];
 
    public function appointment(){
     return $this->belongsTo(Appointments::class);
