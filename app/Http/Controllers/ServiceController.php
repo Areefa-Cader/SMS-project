@@ -30,7 +30,7 @@ class ServiceController extends Controller
     
     }
     catch(\Exception $error){
-        return response()->json(['error'=>$error->getMessage()],500);
+        return response()->json(['error'=>$error->getMessage()]);
     }
     }
 

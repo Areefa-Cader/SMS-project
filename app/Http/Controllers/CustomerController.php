@@ -13,13 +13,15 @@ class CustomerController extends Controller
     // Get Customer
     public function getCustomer()
     {   
-        // $customer = Customers::all();
-        //     return response()->json($customer);
-        // } catch (\Exception $error) {
-        //     return response()->json(["error" => $error->getMessage()], 500);
-        // }
+        try{
+        $customer = Customers::all();
+            return response()->json($customer);
 
-        return response()->json(Customers::all(),200);
+        } catch (\Exception $error) {
+            return response()->json(["error" => $error->getMessage()], 500);
+        }
+
+        
     }
 
 

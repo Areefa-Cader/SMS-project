@@ -135,19 +135,15 @@ class AppointmentController extends Controller
 
            $staff = Staffs::findOrFail($request->input('staff_id'));
 
-           $serviceIds = $request->input('service_id');
+           $serviceId = $request->input('service_id');
 
 
-           if (empty($serviceIds) || !is_array($serviceIds)) {
+           if (empty($serviceId)) {
             return response()->json(['error' => 'Invalid service IDs'], 400);
         }
-
-        $serviceNames = [];
-        $totalAmount = 0;
        
 
-        foreach ($serviceIds as $serviceId) {
-            $service = Services::where('service_name', $serviceId)->first();
+           $service = Services::find($serviceId);
 
             if (!$service) {
                 return response()->json(['error' => "Service not found: $serviceId"], 400);
@@ -163,17 +159,13 @@ class AppointmentController extends Controller
         if($validateAppointment){
             return response()->json(['error'=>'This time slot is already booked']);
         }
-
-        $serviceNames[] = $service->service_name;
-        $totalAmount += $service->price;
        
 
 
-    }  
+    
         //create a new appointment
 
         // $serviceIdsString = implode(',',$serviceIds);
-        $serviceNamesString = implode(',' , $serviceNames);
 
         $appointment = new Appointments([
             'customer_id'=>$customer->id,
@@ -190,8 +182,8 @@ class AppointmentController extends Controller
         $invoice = new Invoices([
             'appointment_id'=>$appointment->id,
             'customer_name'=>$appointment->customer->fullname,
-            'service_name'=>$serviceNamesString,
-            'total_amount'=>$totalAmount,
+            'service_name'=>$service->service_name,
+            'total_amount'=>$service->price,
             'issue_date'=>today(),
             'due_date'=>$appointment->date,
          ]);
@@ -392,7 +384,7 @@ public function getStaffAvailability(Request $request) {
 
             $appointment->update([
 
-                'customer_id' => $request->input('customer_id'),
+                // 'customer_id' => $request->input('customer_id'),
                 'staff_id' =>  $request->input('staff_id'),
                 'service_id' =>  $request->input('service_id'),
                 'date' => Carbon::createFromFormat('Y-m-d', $request->input('date'))->format('Y-m-d'),
