@@ -16,66 +16,7 @@ use Symfony\Component\Console\Input\Input;
 
 class AppointmentController extends Controller
 {
-    // public function retrieveData(){
-    //    $appointment = Appointments::all();
-    //    try{
-    //     return response()->json(['status'=>true, $appointment],200);
-    //    }catch(\Exception $error){
-    //     return response()->json(['error'=>$error->getMessage()],500);
-    //    }
-    // }
-
-    // public function addCustomerDetails(Request $request){
-    //     try{
-    //     $customer = Customers::where('contact_no', $request->input('contact_no'))->first();
-    //     if(is_null($customer)){
-    //         return response()->json(['message'=>'we could not find any customer on this number']);
-    //     }else{
-    //         return response()->json(['customer'=>$customer]);
-
-    //     }
-    // } catch(\Exception $error){
-    //     return response()->json(['message'=>$error->getMessage()],500);
-    // }  
-    // }
-
-    // public function addAppointment(Request $request){
-
-    //     $customerName = Customers::pluck('fullname', $request->input('fullname'))->first();
-    //     //   return response()->json(['message'=>true ,$customerName]);
-
-    //     $staffName = Staffs::pluck('fullname', $request->input('fullname'))->first();
-    //     $serviceName = Services::where('service_name', $request->input('service_name'))->first();
-    //     // return response()->json(['message'=>true ,$serviceName]);
-
-    //     try{ 
-    //         if (!$customerName) {
-    //             return response()->json(['message' => 'Customer was already exist', 'debug' => $request->input('customer_fullname')], 400);
-    //         }
-    //         if (!$staffName) {
-    //             return response()->json(['message' => 'Staff not found', 'debug' => $request->input('staff_fullname')], 400);
-    //         }
-    //         if (!$serviceName) {
-    //             return response()->json(['message' => 'Service not found', 'debug' => $request->input('service_name')], 400);
-    //         }
-    //        else{
-    //         $appointment = new Appointments([
-    //             "customer_name"=>$customerName,
-    //             "staff_name"=>$staffName,
-    //             "service_name"=>$serviceName->service_name,
-    //             'date'=> $request->input('date'),
-    //             'time'=> $request->input('time')->format('h.i a')
-    //         ]);
-    //         $appointment->save();
-    //         return response()->json(['message' => 'Sucessfully Added'],200);
-    //     }
-    //     }
-    //     catch(\Exception $error){
-    //         return response()->json(['message'=>$error->getMessage()],500);
-    //     }
-    // }
-
-
+   
     public function getAllAppointment(){
         try {
             $appointments = Appointments::with(['customer', 'staff', 'service'])->get();
@@ -196,14 +137,14 @@ class AppointmentController extends Controller
 
          $reminder = new reminders([
             'type'=> 'New Appointment',
-            'message'=> json_encode(['message'=>'You have an Appointment at'.$appointment->time]),
+            'message'=> json_encode('You have an Appointment at'.$appointment->time),
             'appointment_id'=>$appointment->id,
             'staff_id'=>$staff->id
          ]);
 
          $reminder->save();
-         $staff= Staffs::find($appointment->staff_id);
-         $staff->notify(new NewAppointment($appointment));
+        //  $staff= Staffs::find($appointment->staff_id);
+        //  $staff->notify(new NewAppointment($appointment));
 
 
     
