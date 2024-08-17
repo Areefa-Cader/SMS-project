@@ -20,23 +20,23 @@ class UsersTableSeeder extends Seeder
 
         User::create([
             'fullname' => 'Rinoshas Bridal',
-            'email' => 'Rinosha12@gmail.com',
+            'email' => 'Rinoshasbridal@gmail.com',
             'contact_number'=> '0764334455',
             'role'=>'owner',
-            'username'=>'Salon_Rinosha',
-            'password'=>Hash::make('Rinosha@12mua'),
+            'username'=>'SalonRinosha',
+            'password'=>Hash::make('Rinosha@2024'),
             'status'=>'active'
         ]);
 
         //create admin details
 
         User::create([
-            'fullname' => 'John Doe',
-            'email' => 'john27@gmail.com',
+            'fullname' => 'Admin user',
+            'email' => 'admin@gmail.com',
             'contact_number'=> '0772382178',
             'role'=>'admin',
-            'username'=>'Admin',
-            'password'=>Hash::make('User27admin$'),
+            'username'=>'Adminuser',
+            'password'=>Hash::make('Admin@2024'),
             'status'=>'active'
         ]);
     }

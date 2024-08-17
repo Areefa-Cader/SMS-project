@@ -133,7 +133,7 @@ class AuthController extends Controller
                     return response()->json(["error" => "Invalid role"],400);
             }
         }else {
-            return response()->json(["error" => "Incorrect Password"]);
+            return response()->json(["error" => "Incorrect Username or Password"]);
         }
 
             
@@ -168,12 +168,12 @@ class AuthController extends Controller
 
         }
             else {
-                return response()->json(["error" => "Incorrect Password"]);
+                return response()->json(["error" => "Incorrect Username or Password"]);
             }
         
     }
   else {
-        return response()->json(["error" => "Incorrect Username"]);
+        return response()->json(["error" => "Incorrect Username or Password"]);
     }
 
 }

@@ -137,14 +137,14 @@ class AppointmentController extends Controller
 
          $reminder = new reminders([
             'type'=> 'New Appointment',
-            'message'=> json_encode('You have an Appointment at'.$appointment->time),
+            'message'=> json_encode('You have an Appointment at'.$appointment->date),
             'appointment_id'=>$appointment->id,
             'staff_id'=>$staff->id
          ]);
 
          $reminder->save();
-        //  $staff= Staffs::find($appointment->staff_id);
-        //  $staff->notify(new NewAppointment($appointment));
+         $staff= Staffs::find($appointment->staff_id);
+         $staff->notify(new NewAppointment($appointment));
 
 
     
@@ -333,6 +333,19 @@ public function getStaffAvailability(Request $request) {
                 'price'=>$request->input('price')
 
             ]);
+
+            $invoice = $appointment->invoice; // Assuming you have a relationship defined between appointment and invoice
+
+            // Update the invoice if it exists
+            if ($invoice) {
+                $invoice->update([
+                    'service_name' => $appointment->service->service_name,
+                    'total_amount' => $appointment->price,
+                    'due_date' => $appointment->date, // Keep the existing due date or update it if necessary
+                    
+                ]);
+            }
+
             return response()->json(['message'=>'successfully updated']);
         }
     }catch(\Exception $error){
